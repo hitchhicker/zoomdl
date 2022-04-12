@@ -187,8 +187,9 @@ class ZoomDL():
                         1)
             self._print(all_urls, 0)
         if self.args.save_video is True:
-            print(self.args.save_video)
             for vid_name, vid_url in all_urls.items():
+                if self.args.save_only_screen_video is True and vid_name != "screen":
+                    continue
                 extension = vid_url.split("?")[0].split("/")[-1].split(".")[1]
                 self._print("Found name is {}, vid_name is {}, extension is {}"
                             .format(self.recording_name, vid_name, extension), 0)

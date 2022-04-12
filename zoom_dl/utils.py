@@ -184,7 +184,12 @@ def parseOpts(args: List[str]):
 
     PARSER.add_argument("--save-video",
                         help="Save video in the meeting",
-                        default=False,
+                        default=True,
+                        action='store_true')
+
+    PARSER.add_argument("--save-only-screen-video",
+                        help="Save only screen video in the meeting",
+                        default=True,
                         action='store_true')
 
     return PARSER.parse_args(args)
