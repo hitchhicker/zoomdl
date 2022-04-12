@@ -182,4 +182,9 @@ def parseOpts(args: List[str]):
                         default=False,
                         action='store_true')
 
+    PARSER.add_argument("--save-video",
+                        help="Save video in the meeting",
+                        default=False,
+                        action='store_true')
+
     return PARSER.parse_args(args)

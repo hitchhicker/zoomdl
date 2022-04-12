@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="3fc93943-566a-40d6-9912-a391bb634968" name="zoomdl">
+        <fileTransfer accessType="SFTP" host="10.189.57.24" port="31000" sshConfigId="c2a4d601-3b2c-4c7a-8301-0966fbfcb4e2" sshConfig="b.yu@10.189.57.24:31000 agent" authAgent="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

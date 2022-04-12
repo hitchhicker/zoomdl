@@ -186,51 +186,52 @@ class ZoomDL():
                          "downloading all of them"),
                         1)
             self._print(all_urls, 0)
-
-        for vid_name, vid_url in all_urls.items():
-            extension = vid_url.split("?")[0].split("/")[-1].split(".")[1]
-            self._print("Found name is {}, vid_name is {}, extension is {}"
-                        .format(self.recording_name, vid_name, extension), 0)
-            vid_name_appendix = f"_{vid_name}" if len(all_urls) > 1 else ""
-            filepath = get_filepath(
-                fname, self.recording_name, extension, clip, vid_name_appendix)
-            filepath_tmp = filepath + ".part"
-            self._print("Full filepath is {}, temporary is {}".format(
-                filepath, filepath_tmp), 0)
-            self._print("Downloading '{}'...".format(
-                filepath.split("/")[-1]), 1)
-            vid_header = self.session.head(vid_url)
-            total_size = int(vid_header.headers.get('content-length'))
-            # unit_int, unit_str = ((1024, "KiB") if total_size < 30*1024**2
-            #                       else (1024**2, "MiB"))
-            start_bytes = int(os.path.exists(filepath_tmp) and
-                              os.path.getsize(filepath_tmp))
-            if start_bytes > 0:
-                self._print("Incomplete file found ({:.2f}%), resuming..."
-                            .format(100*start_bytes/total_size), 1)
-            headers = {"Range": "bytes={}-".format(start_bytes)}
-            vid = self.session.get(vid_url, headers=headers, stream=True)
-            if vid.status_code in [200, 206] and total_size > 0:
-                with open(filepath_tmp, "ab") as vid_file:
-                    with tqdm(total=total_size,
-                              unit='B',
-                              initial=start_bytes,
-                              dynamic_ncols=True,
-                              unit_scale=True,
-                              unit_divisor=1024) as pbar:
-                        for data in vid.iter_content(1024):
-                            if data:
-                                pbar.update(len(data))
-                                vid_file.write(data)
-                                vid_file.flush()
-                self._print("Done!", 1)
-                os.rename(filepath_tmp, filepath)
-            else:
-                self._print(
-                    "Woops, error downloading: '{}'".format(vid_url), 3)
-                self._print("Status code: {}, file size: {}".format(
-                    vid.status_code, total_size), 0)
-                sys.exit(1)
+        if self.args.save_video is True:
+            print(self.args.save_video)
+            for vid_name, vid_url in all_urls.items():
+                extension = vid_url.split("?")[0].split("/")[-1].split(".")[1]
+                self._print("Found name is {}, vid_name is {}, extension is {}"
+                            .format(self.recording_name, vid_name, extension), 0)
+                vid_name_appendix = f"_{vid_name}" if len(all_urls) > 1 else ""
+                filepath = get_filepath(
+                    fname, self.recording_name, extension, clip, vid_name_appendix)
+                filepath_tmp = filepath + ".part"
+                self._print("Full filepath is {}, temporary is {}".format(
+                    filepath, filepath_tmp), 0)
+                self._print("Downloading '{}'...".format(
+                    filepath.split("/")[-1]), 1)
+                vid_header = self.session.head(vid_url)
+                total_size = int(vid_header.headers.get('content-length'))
+                # unit_int, unit_str = ((1024, "KiB") if total_size < 30*1024**2
+                #                       else (1024**2, "MiB"))
+                start_bytes = int(os.path.exists(filepath_tmp) and
+                                  os.path.getsize(filepath_tmp))
+                if start_bytes > 0:
+                    self._print("Incomplete file found ({:.2f}%), resuming..."
+                                .format(100*start_bytes/total_size), 1)
+                headers = {"Range": "bytes={}-".format(start_bytes)}
+                vid = self.session.get(vid_url, headers=headers, stream=True)
+                if vid.status_code in [200, 206] and total_size > 0:
+                    with open(filepath_tmp, "ab") as vid_file:
+                        with tqdm(total=total_size,
+                                  unit='B',
+                                  initial=start_bytes,
+                                  dynamic_ncols=True,
+                                  unit_scale=True,
+                                  unit_divisor=1024) as pbar:
+                            for data in vid.iter_content(1024):
+                                if data:
+                                    pbar.update(len(data))
+                                    vid_file.write(data)
+                                    vid_file.flush()
+                    self._print("Done!", 1)
+                    os.rename(filepath_tmp, filepath)
+                else:
+                    self._print(
+                        "Woops, error downloading: '{}'".format(vid_url), 3)
+                    self._print("Status code: {}, file size: {}".format(
+                        vid.status_code, total_size), 0)
+                    sys.exit(1)
 
         # save chat
         if self.args.save_chat is not None:
